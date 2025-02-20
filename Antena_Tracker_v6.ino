@@ -18,7 +18,7 @@ motor_t motor_azimuth;
 motor_t motor_elevacion;
 
 uint32_t frecuencia_timer_sensores = 10;  // 10  ms   <=>  100Hz
-uint32_t frecuencia_timer_control = 1000;  // 100 ms (en realidad no es la frecuencia, es cada cuanto se ejecuta) (1Hz => 1000ms)
+uint32_t frecuencia_timer_control = 1000;  // 1000 ms (en realidad no es la frecuencia, es cada cuanto se ejecuta) (1Hz => 1000ms)
 
 
 bool calibrar_mpu = false;
@@ -181,20 +181,6 @@ void loop() {
 
   int64_t diferencia = absolute_time_diff_us(tiempo_final, tiempo_inicial) / 1000;
   sleep_ms(20 - diferencia);
-
-
-
-
-  // sleep_ms(5000);
-  // Serial.println("Mover motor Elevacion -15 grados");
-  // motor_mover(&motor_elevacion, 15*4,0);
-  // sleep_ms(5000);
-  // Serial.println("Mover motor Elevacion -10 grados");
-  // motor_mover(&motor_elevacion, 10*4,0);
-
-  // sleep_ms(10000);
-  // Serial.println("Mover motor Elevacion 45 grados");
-  // motor_mover(&motor_elevacion, 45*4,1);
 
 
 
