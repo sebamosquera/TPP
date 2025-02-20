@@ -4,6 +4,8 @@
 #include "motor.h"
 #include "sensors_driver.h"
 
+#include "posiciones_drone.h"
+
 
 // --- PARA MEJORAR
 // Definir rangos y sentidos: Por ejemplo el rango del angulo del acelerometro esta entre -87 y +87 y eso limita bastante
@@ -25,12 +27,11 @@ bool calibrar_mpu = false;
 bool calibrar_magnetometro = false;
 
 
-// Variables de temporización
-absolute_time_t tiempo_anterior_10ms = get_absolute_time();
-absolute_time_t tiempo_anterior_100ms = get_absolute_time();
+// Variables de temporización para el loop
+absolute_time_t tiempo_anterior = get_absolute_time();
 const int intervalo_10ms = 10;   // Intervalo de 10 ms
 const int intervalo_100ms = 100; // Intervalo de 100 ms
-
+const int intervalo_300ms = 300; // Intervalo de 100 ms
 
 
 float elevacion_ref = 0;
@@ -105,30 +106,21 @@ void setup() {
     // Serial.println();
   }
 
+
   sleep_ms(1000);
-
-
-  // sensors_driver_set_initial_gyro_angles(&sensors_driver); // NO VA
-  //
 
 
   antena_tracker_init(&antena_tracker, &sensors_driver, &motor_azimuth, &motor_elevacion);
 
 
-  //
-  // antena_tracker_set_posicion_del_drone(&antena_tracker, -34.5964800, -58.4881500, 1);
-  // antena_tracker_set_posicion_del_tracker(&antena_tracker, -34.5964800,  -58.488200, 0);
-
-  antena_tracker_set_posicion_del_drone(&antena_tracker, -34.5964800, -58.488184, 0); // Quedan separados unos metros
+  // antena_tracker_set_posicion_del_drone(&antena_tracker, -34.5964800, -58.488184, 0); // Quedan separados unos metros
   antena_tracker_set_posicion_del_tracker(&antena_tracker, -34.5964800,  -58.488200, 0);
-  //
 
 
   // Iniciar los timers de sensores cada 100Hz y de control cada 10Hz
   antena_tracker_iniciar_timer_sensores(&antena_tracker, frecuencia_timer_sensores);
 
   sleep_ms(5000);
-  // Serial.println("Inicia el timer de control");
 
   antena_tracker_iniciar_timer_control(&antena_tracker, frecuencia_timer_control);
   //
@@ -139,23 +131,6 @@ void setup() {
   // irq_set_enabled(UART0_IRQ, true); // Habilitar la interrupción
   //
 
-  // sleep_ms(2000);
-  // Serial.println("Mover motor");
-  // motor_mover(&motor_azimuth, 30*4.55,0);
-  // sleep_ms(5000);
-  // Serial.println("Mover motor 2");
-  // motor_mover(&motor_azimuth, 30*4.55,1);
-
-
-  // sleep_ms(5000);
-  // Serial.println("Mover motor Elevacion 30 grados");
-  // motor_mover(&motor_elevacion, 30*4,0);
-  // sleep_ms(5000);
-  // Serial.println("Mover motor Elevacion -30 grados");
-  // motor_mover(&motor_elevacion, 30*4,1);
-
-   // antena_tracker.angulo_elevacion_referencia = 80;
-
 }
 
 
@@ -164,18 +139,16 @@ void loop() {
 
   absolute_time_t tiempo_inicial = get_absolute_time();
 
-  if(Serial.available()>0) {
-    elevacion_ref = (float)Serial.read() - 70;
-  }
+  // if(Serial.available()>0) {
+  //   elevacion_ref = (float)Serial.read() - 70;
+  // }
 
   // antena_tracker.angulo_azimuth_referencia = elevacion_ref;
   antena_tracker.angulo_elevacion_referencia = elevacion_ref;
 
-  // motor_mover(&motor_elevacion, elevacion_ref, sentido_giro);
-
   float azim_real = antena_tracker.angulo_azimuth_real;
   float elev_real = antena_tracker.angulo_elevacion_real;
-  matlab_send(azim_real,elev_real,elevacion_ref + 70);
+  // matlab_send(azim_real,elev_real,elevacion_ref + 70);
 
   absolute_time_t tiempo_final = get_absolute_time();
 
@@ -184,46 +157,25 @@ void loop() {
 
 
 
+  absolute_time_t tiempo_actual = get_absolute_time();
+  diferencia = absolute_time_diff_us(tiempo_anterior, tiempo_actual) / 1000;
 
-  // absolute_time_t tiempo_actual = get_absolute_time();
-  //
-  // // Diferencia para el intervalo de 10 ms
-  // int64_t diferencia_10ms = absolute_time_diff_us(tiempo_anterior_10ms, tiempo_actual) / 1000;
-  // if (diferencia_10ms >= intervalo_10ms) {
-  //     sensors_driver_read_sensors(&sensors_driver);
-  //     tiempo_anterior_10ms = tiempo_actual;
-  // }
-  //
-  // // Diferencia para el intervalo de 100 ms
-  // int64_t diferencia_100ms = absolute_time_diff_us(tiempo_anterior_100ms, tiempo_actual) / 1000;
-  // if (diferencia_100ms >= intervalo_100ms) {
-  //
-  //     // Serial.print("Accel Roll: ");
-  //     // Serial.print(sensors_driver.accel_roll_angle);
-  //     // Serial.print("\tAccel Pitch: ");
-  //     // Serial.println(sensors_driver.accel_pitch_angle);
-  //     //
-  //     // Serial.print("Gyro Roll: ");
-  //     // Serial.print(sensors_driver.gyro_roll_angle);
-  //     // Serial.print("\tGyro Pitch: ");
-  //     // Serial.print(sensors_driver.gyro_pitch_angle);
-  //     // Serial.print("\tGyro Yaw: ");
-  //     // Serial.println(sensors_driver.gyro_yaw_angle);
-  //     //
-  //     Serial.print("Roll: ");
-  //     Serial.print(sensors_driver.roll_angle);
-  //     Serial.print("\tPitch: ");
-  //     Serial.print(sensors_driver.pitch_angle);
-  //     Serial.print("\tYaw: ");
-  //     Serial.println(sensors_driver.yaw_angle);
-  //     Serial.println("----------------------");
-  //
-  //     // Serial.print("Magnet Azimuth: ");
-  //     // Serial.println(sensors_driver.magnet_azimuth_angle);
-  //     // Serial.println("----------------------");
-  //
-  //     tiempo_anterior_100ms = tiempo_actual;
-  // }
+  // Si pasan 300 ms se ejecuta el bloque de adentro
+  if (diferencia >= intervalo_300ms) {
+
+    if(posicion_drone_i < n_posiciones) {
+
+      double latitud_drone = posicion_drone[posicion_drone_i][0];
+      double longitud_drone = posicion_drone[posicion_drone_i][1];
+      double altitud_drone = posicion_drone[posicion_drone_i][2];
+
+      antena_tracker_set_posicion_del_drone(&antena_tracker, latitud_drone, longitud_drone, altitud_drone);
+      
+      posicion_drone_i++;
+    }
+
+    tiempo_anterior = tiempo_actual;
+  }
 
 
 }

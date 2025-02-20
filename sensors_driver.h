@@ -76,6 +76,7 @@ void sensors_driver_calibrate_mpu(sensors_driver_t *self);
 void sensors_driver_calibrate_magneto(sensors_driver_t *self);
 // CALIBRACION
 
+
 // LECTURA
 void sensors_driver_read_sensors(sensors_driver_t *self);
 
@@ -93,9 +94,7 @@ float sensors_driver_get_elevacion(sensors_driver_t *self);
 // LECTURA
 
 
-void sensors_driver_set_initial_gyro_angles(sensors_driver_t *self);
-
-// CONFIGURACION
+// SETTEO OFFSETS
 void sensors_driver_set_mpu_offsets(sensors_driver_t *self, float gyro_offsets[3]);
 
 void sensors_driver_get_mpu_gyro_offsets(sensors_driver_t *self, float *offsets);
@@ -103,7 +102,7 @@ void sensors_driver_get_mpu_gyro_offsets(sensors_driver_t *self, float *offsets)
 void sensors_driver_set_magnetometer_offsets(sensors_driver_t *self, int16_t magneto_offsets[3]);
 
 void sensors_driver_get_magnetometer_offsets(sensors_driver_t *self, int16_t *magneto_offsets);
-// CONFIGURACION
+// SETTEO OFFSETS
 
 
 #ifdef __cplusplus

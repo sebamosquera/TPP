@@ -71,25 +71,6 @@ enum MPU6050_DLPF
 };
 
 
-
-// struct i2c_information
-// {
-//     i2c_inst_t *instance;
-//     uint8_t address;
-// };
-//
-// typedef struct int16_vector {
-//     int16_t x;
-//     int16_t y;
-//     int16_t z;
-// } int16_vector_t;
-//
-// typedef struct float_vector {
-//     float x;
-//     float y;
-//     float z;
-// } float_vector_t;
-
 struct mpu6050_configuration
 {
     float dps_per_digit;
@@ -108,12 +89,13 @@ typedef struct mpu6050
 } mpu6050_t;
 
 
-
+// INICIALIZACION y CONEXION
 bool mpu6050_init(struct mpu6050 *self, i2c_inst_t *i2c_instance);
 
 uint8_t mpu6050_connected(struct mpu6050 *self);
 
 uint8_t mpu6050_who_am_i(struct mpu6050 *self);
+// INICIALIZACION y CONEXION
 
 
 // LECTURA
@@ -122,20 +104,18 @@ void mpu6050_read_raw_accel(struct mpu6050 *self, int16_t *ax, int16_t *ay, int1
 void mpu6050_read_raw_gyro(struct mpu6050 *self, int16_t *gx, int16_t *gy, int16_t *gz);
 
 void mpu6050_read(struct mpu6050 *self, float_vector_t *gyro, float_vector_t *accel);
+// LECTURA
 
 
 // CALIBRACION / OFFSETS
 void mpu6050_set_gyro_offsets(mpu6050_t *self, float *gyro_offsets);
 
-void mpu6050_set_accel_offsets(mpu6050_t *self, float_vector_t *accel_offsets);
-
-// void mpu6050_set_accel_offsets(mpu6050_t *self, float *accel_offsets);
+void mpu6050_set_accel_offsets(mpu6050_t *self, float *accel_offsets);
 
 void mpu6050_get_gyro_offsets(mpu6050_t *self, float *gyro_offsets);
 
-void mpu6050_get_accel_offsets(mpu6050_t *self, float_vector_t *accel_offsets);
-
-// void mpu6050_get_accel_offsets(mpu6050_t *self, float *accel_offsets);
+void mpu6050_get_accel_offsets(mpu6050_t *self, float *accel_offsets);
+// CALIBRACION / OFFSETS
 
 
 // SETTERS PARA CONFIGURACION
@@ -152,6 +132,8 @@ void mpu6050_set_sleep_enabled(struct mpu6050 *self, uint8_t state);
 void mpu6050_set_dlpf_mode(struct mpu6050 *self, enum MPU6050_DLPF dlpf);
 
 void mpu6050_set_dhpf_mode(struct mpu6050 *self, enum MPU6050_DHPF dhpf);
+// SETTERS PARA CONFIGURACION
+
 
 
 #ifdef __cplusplus

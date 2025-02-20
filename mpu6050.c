@@ -49,6 +49,8 @@
 #define GRAVITY_CONSTANT 9.80665f
 
 
+
+// INICIALIZACION y CONEXION
 bool mpu6050_init(struct mpu6050 *self, i2c_inst_t *i2c_instance) {
 
   self->i2c.instance = i2c_instance;
@@ -104,6 +106,8 @@ uint8_t mpu6050_who_am_i(struct mpu6050 *self)
     i2c_read_reg(self->i2c.instance, self->i2c.address, WHO_AM_I, &who_am_i, 1);
     return who_am_i;
 }
+// INICIALIZACION y CONEXION
+
 
 
 // LECTURA
@@ -151,6 +155,7 @@ void mpu6050_read(struct mpu6050 *self, struct float_vector *gyro, struct float_
     accel->z = (az * self->config.range_per_digit * GRAVITY_CONSTANT);
   }
 }
+// LECTURA
 
 
 
@@ -161,16 +166,11 @@ void mpu6050_set_gyro_offsets(mpu6050_t *self, float gyro_offsets[3]){
   self->gyro_offsets.z = gyro_offsets[2];
 }
 
-void mpu6050_set_accel_offsets(mpu6050_t *self, float_vector_t *accel_offsets){
-  self->accel_offsets = *accel_offsets;
-
+void mpu6050_set_accel_offsets(mpu6050_t *self, float accel_offsets[3]){
+  self->accel_offsets.x = accel_offsets[0];
+  self->accel_offsets.y = accel_offsets[1];
+  self->accel_offsets.z = accel_offsets[2];
 }
-
-// void mpu6050_set_accel_offsets(mpu6050_t *self, float accel_offsets[3]){
-  // self->accel_offsets.x = accel_offsets[0];
-  // self->accel_offsets.y = accel_offsets[1];
-  // self->accel_offsets.z = accel_offsets[2];
-// }
 
 void mpu6050_get_gyro_offsets(mpu6050_t *self, float gyro_offsets[3]) {
   gyro_offsets[0] = self->gyro_offsets.x;
@@ -178,15 +178,13 @@ void mpu6050_get_gyro_offsets(mpu6050_t *self, float gyro_offsets[3]) {
   gyro_offsets[2] = self->gyro_offsets.z;
 }
 
-void mpu6050_get_accel_offsets(mpu6050_t *self, float_vector_t *accel_offsets) {
-  *accel_offsets = self->accel_offsets;
+void mpu6050_get_accel_offsets(mpu6050_t *self, float accel_offsets[3]){
+  accel_offsets[0] = self->accel_offsets.x;
+  accel_offsets[1] = self->accel_offsets.y;
+  accel_offsets[2] = self->accel_offsets.z;
 }
+// CALIBRACION / OFFSETS
 
-// void mpu6050_get_accel_offsets(mpu6050_t *self, float accel_offsets[3]){
-  // accel_offsets[0] = self->accel_offsets.x;
-  // accel_offsets[1] = self->accel_offsets.y;
-  // accel_offsets[2] = self->accel_offsets.z;
-// }
 
 // SETTERS PARA CONFIGURACION
 void mpu6050_set_clock_source(struct mpu6050 *self, enum MPU6050_CLOCK_SOURCE clock_source)
@@ -307,3 +305,4 @@ void mpu6050_set_dhpf_mode(struct mpu6050 *self, enum MPU6050_DHPF dhpf)
     uint8_t data[2] = {ACCEL_CONFIG, value};
     i2c_write_blocking(self->i2c.instance, self->i2c.address, data, 2, false);
 }
+// SETTERS PARA CONFIGURACION

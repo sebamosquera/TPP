@@ -25,6 +25,8 @@ void sensors_driver_init(sensors_driver_t *self) {
 
 }
 
+
+// CALIBRACION
 void sensors_driver_calibrate_sensors(sensors_driver_t *self, bool calibrar_mpu, bool calibrar_magnetometro) {
 
   if(self->mpu_conectado && calibrar_mpu)
@@ -67,11 +69,8 @@ void sensors_driver_calibrate_mpu(sensors_driver_t *self) {
   float gyro_offsets[3] = {gyro_offset_x, gyro_offset_y, gyro_offset_z};
   mpu6050_set_gyro_offsets(&self->mpu, gyro_offsets);
 
-  float_vector_t accel_offsets = {ACCEL_OFFSET_X, ACCEL_OFFSET_Y, ACCEL_OFFSET_Z};
-  mpu6050_set_accel_offsets(&self->mpu, &accel_offsets);
-
-  // float accel_offsets[3] = {ACCEL_OFFSET_X, ACCEL_OFFSET_Y, ACCEL_OFFSET_Z};
-  // mpu6050_set_accel_offsets(&self->mpu, accel_offsets);
+  float accel_offsets[3] = {ACCEL_OFFSET_X, ACCEL_OFFSET_Y, ACCEL_OFFSET_Z};
+  mpu6050_set_accel_offsets(&self->mpu, accel_offsets);
 
   self->mpu.calibrated = true;
 }
@@ -130,8 +129,10 @@ void sensors_driver_calibrate_magneto(sensors_driver_t *self) {
   self->magnetometer.calibrated = true;
   // algun chequeo de los offsets si estan mal que devuelva false
 }
+// CALIBRACION
 
 
+// LECTURA
 void sensors_driver_read_sensors(sensors_driver_t *self) {
 
   float Ts = (float)(us_to_ms(time_us_64()) - self->sense_time_ms) / 1000.0;
@@ -244,53 +245,12 @@ float sensors_driver_get_elevacion(sensors_driver_t *self) {
 // LECTURA
 
 
-
-// CONFIGURACION
-// setea los valores iniciales de referencia para el giroscopo
-void sensors_driver_set_initial_gyro_angles(sensors_driver_t *self) {
-
-  self->gyro_roll_angle = 0;
-  self->gyro_pitch_angle = 0;
-  self->gyro_yaw_angle = 0;
-
-  if(self->mpu_conectado)
-  {
-    mpu6050_t *mpu6050 = &self->mpu;
-    float_vector_t accel;
-    float_vector_t gyro;
-    mpu6050_read(mpu6050, &gyro, &accel);
-
-    sensors_driver_calcular_angulos_accel(self, &accel);
-
-    self->gyro_roll_angle = self->accel_roll_angle;
-    self->gyro_pitch_angle = self->accel_pitch_angle;
-  }
-
-  if(self->magnetometer_conectado)
-  {
-    magnetometer_t *magnetometer = &self->magnetometer;
-    int16_vector_t mag;
-    magnetometer_read(magnetometer, &mag);
-
-    sensors_driver_calcular_angulos_magneto(self, &mag);
-
-    self->gyro_yaw_angle = self->magnet_azimuth_angle;
-  }
-
-}
-
-
+// SETTEO OFFSETS
 void sensors_driver_set_mpu_offsets(sensors_driver_t *self, float gyro_offsets[3]) {
-  // float_vector_t gyro_offsets = {g_offsets[0], g_offsets[1], g_offsets[2]};
-
   mpu6050_set_gyro_offsets(&self->mpu, gyro_offsets);
 
-
-  float_vector_t accel_offsets = {ACCEL_OFFSET_X, ACCEL_OFFSET_Y, ACCEL_OFFSET_Z};
-  mpu6050_set_accel_offsets(&self->mpu, &accel_offsets);
-
-  // float accel_offsets[3] = {ACCEL_OFFSET_X, ACCEL_OFFSET_Y, ACCEL_OFFSET_Z};
-  // mpu6050_set_accel_offsets(&self->mpu, accel_offsets);
+  float accel_offsets[3] = {ACCEL_OFFSET_X, ACCEL_OFFSET_Y, ACCEL_OFFSET_Z};
+  mpu6050_set_accel_offsets(&self->mpu, accel_offsets);
 
   self->mpu.calibrated = true;
 }
@@ -312,3 +272,4 @@ void sensors_driver_get_magnetometer_offsets(sensors_driver_t *self, int16_t *ma
 
   self->mpu.calibrated = true;
 }
+// SETTEO OFFSETS

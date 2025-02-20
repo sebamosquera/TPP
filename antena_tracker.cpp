@@ -24,49 +24,10 @@ void antena_tracker_init(antena_tracker_t *self, sensors_driver_t *sensors_drive
   self->angulo_azimuth_real = 0; // y1
   self->angulo_elevacion_real = 0; // y2
 
-  // self->accion_control_azimuth.angulo_giro = 0; // u1
-  // self->accion_control_azimuth.sentido_giro = 0; // u1
-  //
-  // self->accion_control_elevacion.angulo_giro = 0; // u2
-  // self->accion_control_elevacion.sentido_giro = 0; // u2
-
-  self->angulo_giro_azimuth = 0;
-  self->angulo_giro_elevacion = 0;
+  self->angulo_giro_azimuth = 0; // u1
+  self->angulo_giro_elevacion = 0; // u2
 
 }
-
-
-/*
-// Recibe r1, r2, y1, y2
-// Devuelve u1, u2
-void _calcular_accion_control(float ang_az_ref, float ang_el_ref, float ang_az_real, float ang_el_real, float *angulo_giro1, bool *sentido_giro1, float *angulo_giro2, bool *sentido_giro2) {
-
-  // accion de control para angulo azimuth
-  // EJEMPLO: antena apuntando al SUR: angulo_azimuth = 180
-  //          drone justo al OESTE:    angulo_azimuth_referencia = 270
-  //                                   angulo_giro = +90
-  *angulo_giro1 = fmod((ang_az_ref - ang_az_real + 360), 360); // Asegura valores positivos
-
-  if (*angulo_giro1 <= 180) {
-    *sentido_giro1 = 0; // Horario
-  } else {
-    *angulo_giro1 = 360 - *angulo_giro1;
-    *sentido_giro1 = 1; // Antihorario
-  }
-
-
-  // accion de control para angulo de elevacion
-  if (ang_el_real <= ang_el_ref) {
-      *angulo_giro2 = ang_el_ref - ang_el_real; // Sentido Horario
-      *sentido_giro2 = 1;
-  } else {
-      *angulo_giro2 = ang_el_real - ang_el_ref; // *sentido_giro Antihorario
-      *sentido_giro2 = 0;
-  }
-}
-
-*/
-
 
 
 void antena_tracker_calcular_accion_control(antena_tracker_t *self) {
@@ -246,10 +207,8 @@ void antena_tracker_set_posicion_del_tracker(antena_tracker_t *self, double lat_
 // TIMER DE SENSADO
 void antena_tracker_iniciar_timer_sensores(antena_tracker_t *self, int32_t frecuencia_timer) {
   if (!add_repeating_timer_ms(frecuencia_timer, repeating_timer1_callback, self, &self->sensorTimer)) {
-    // Serial.println("Error al configurar el timer");
   }
   else {
-    // Serial.println("Timer de sensores configurado correctamente");
   }
 }
 
@@ -272,7 +231,7 @@ void actualizar_angulos(antena_tracker_t *self) {
 
   self->angulo_azimuth_real = angulo_azimuth;
   self->angulo_elevacion_real = angulo_elevacion;
-  //
+
   // Serial.print("Angulo Azimuth: ");
   // Serial.println(angulo_azimuth);
   // Serial.print("Angulo Elevacion: ");
@@ -283,15 +242,11 @@ void actualizar_angulos(antena_tracker_t *self) {
 
 // TIMER DE CONTROL
 void antena_tracker_iniciar_timer_control(antena_tracker_t *self, int32_t frecuencia_timer) {
-  // timer2 para calcular accion de control y ejecutar accion de control
+  // timer2 para calcular accion de control y ejecutar accion de control cada 1s (1000ms)
   if (!add_repeating_timer_ms(frecuencia_timer, repeating_timer2_callback, self, &self->controlTimer)) {
-    // Serial.println("Error al configurar el timer2");
   }
   else {
-    // Serial.println("Timer2 configurado correctamente");
   }
-
-  // Inicia el timer "controlTimer" que calcula y ejecuta accion de control cada 1s (1000ms)
 }
 
 bool repeating_timer2_callback(__unused struct repeating_timer *t) {
@@ -307,17 +262,43 @@ bool repeating_timer2_callback(__unused struct repeating_timer *t) {
 // CALLBACK 2
 // callback de timer2 llama a esta funcion
 void actualizar_control(antena_tracker_t *self) {
-  // antena_tracker_actualizar_referencia(self);
+  antena_tracker_actualizar_referencia(self);
   antena_tracker_calcular_accion_control(self);
   antena_tracker_ejecutar_accion_control(self);
-
-  // Serial.println("");
-  // Serial.println("---------    CONTROL   ---------");
-  // Serial.print("     Angulo giro azimuth motor:   ");
-  // Serial.println(self->accion_control_azimuth.angulo_giro);
-  // Serial.print("      Angulo giro Elevacion motor:   ");
-  // Serial.println(self->accion_control_elevacion.angulo_giro);
-  // Serial.println("---------    ***    ---------");
-  // Serial.println("");
-
 }
+
+
+
+
+
+
+/*
+// Recibe r1, r2, y1, y2
+// Devuelve u1, u2
+void _calcular_accion_control(float ang_az_ref, float ang_el_ref, float ang_az_real, float ang_el_real, float *angulo_giro1, bool *sentido_giro1, float *angulo_giro2, bool *sentido_giro2) {
+
+  // accion de control para angulo azimuth
+  // EJEMPLO: antena apuntando al SUR: angulo_azimuth = 180
+  //          drone justo al OESTE:    angulo_azimuth_referencia = 270
+  //                                   angulo_giro = +90
+  *angulo_giro1 = fmod((ang_az_ref - ang_az_real + 360), 360); // Asegura valores positivos
+
+  if (*angulo_giro1 <= 180) {
+    *sentido_giro1 = 0; // Horario
+  } else {
+    *angulo_giro1 = 360 - *angulo_giro1;
+    *sentido_giro1 = 1; // Antihorario
+  }
+
+
+  // accion de control para angulo de elevacion
+  if (ang_el_real <= ang_el_ref) {
+      *angulo_giro2 = ang_el_ref - ang_el_real; // Sentido Horario
+      *sentido_giro2 = 1;
+  } else {
+      *angulo_giro2 = ang_el_real - ang_el_ref; // *sentido_giro Antihorario
+      *sentido_giro2 = 0;
+  }
+}
+
+*/

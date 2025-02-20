@@ -43,7 +43,7 @@ typedef struct antena_tracker
     float angulo_giro_azimuth; // u1
     float angulo_giro_elevacion; // u2
 
-
+    
     repeating_timer_t sensorTimer; // Timer1 periódico. Lee sensores, actualiza angulos azimut y elevacion
     repeating_timer_t controlTimer; // Timer2 periódico. Calcula accion de control (angulo y sentido de giro para motores), ejecuta accion de control (mover motores)
 
