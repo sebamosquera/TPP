@@ -26,7 +26,6 @@ void antena_tracker_init(antena_tracker_t *self, sensors_driver_t *sensors_drive
 
   self->angulo_giro_azimuth = 0; // u1
   self->angulo_giro_elevacion = 0; // u2
-
 }
 
 

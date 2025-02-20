@@ -22,7 +22,6 @@ void sensors_driver_init(sensors_driver_t *self) {
   {
     self->magnetometer_conectado = false;
   }
-
 }
 
 

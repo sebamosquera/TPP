@@ -103,9 +103,6 @@ bool repeating_timer2_callback(__unused struct repeating_timer *t); // callback 
 void actualizar_control(antena_tracker_t *self); // callback de timer2 llama a esta funcion
 
 
-
-
-
 #ifdef __cplusplus
 }
 #endif

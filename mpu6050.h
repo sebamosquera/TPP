@@ -107,6 +107,7 @@ void mpu6050_read(struct mpu6050 *self, float_vector_t *gyro, float_vector_t *ac
 // LECTURA
 
 
+
 // CALIBRACION / OFFSETS
 void mpu6050_set_gyro_offsets(mpu6050_t *self, float *gyro_offsets);
 
@@ -133,7 +134,6 @@ void mpu6050_set_dlpf_mode(struct mpu6050 *self, enum MPU6050_DLPF dlpf);
 
 void mpu6050_set_dhpf_mode(struct mpu6050 *self, enum MPU6050_DHPF dhpf);
 // SETTERS PARA CONFIGURACION
-
 
 
 #ifdef __cplusplus

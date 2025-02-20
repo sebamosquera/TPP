@@ -27,7 +27,6 @@ extern "C"
 #endif
 
 
-
 // Estructura general del driver de sensores
 typedef struct sensors_driver {
     mpu6050_t mpu;               // Estructura del MPU6050

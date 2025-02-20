@@ -158,7 +158,6 @@ void mpu6050_read(struct mpu6050 *self, struct float_vector *gyro, struct float_
 // LECTURA
 
 
-
 // CALIBRACION / OFFSETS
 void mpu6050_set_gyro_offsets(mpu6050_t *self, float gyro_offsets[3]){
   self->gyro_offsets.x = gyro_offsets[0];
