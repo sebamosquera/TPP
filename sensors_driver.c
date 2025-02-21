@@ -78,12 +78,11 @@ void sensors_driver_calibrate_magneto(sensors_driver_t *self) {
   int16_t x_min, y_min, z_min;
   int16_t x_max, y_max, z_max;
 
-  // NUEVA OPCION ( A Testear )
   x_min = y_min = z_min = 32767;
   x_max = y_max = z_max = -32767;
 
   magnetometer_t *magnetometer = &self->magnetometer;
-  int16_vector_t mag;
+  float_vector_t mag;
 
   // Realizar la calibración  60 * 250ms = 15 segundos
   for (int i = 0; i < N_MUESTRAS_MAGNETO; i++) {
@@ -152,7 +151,7 @@ void sensors_driver_read_sensors(sensors_driver_t *self) {
   if(self->magnetometer_conectado) {
 
     magnetometer_t *magnetometer = &self->magnetometer;
-    int16_vector_t mag;
+    float_vector_t mag;
     magnetometer_read(magnetometer, &mag);
 
     sensors_driver_calcular_angulos_magneto(self, &mag);
@@ -184,9 +183,9 @@ void sensors_driver_calcular_angulos_gyro(sensors_driver_t *self, float_vector_t
   self->gyro_yaw_angle = angulo_normalizado;
 }
 
-void sensors_driver_calcular_angulos_magneto(sensors_driver_t *self, int16_vector_t *magneto) {
+void sensors_driver_calcular_angulos_magneto(sensors_driver_t *self, float_vector_t *magneto) {
 
-  float azimuth = atan2f( - (float)magneto->x, - (float)magneto->y) * 180 / M_PI;
+  float azimuth = atan2f( - magneto->x*1000, - magneto->y*1000) * 180 / M_PI;
   azimuth += self->declinacion_magnetica;
 
   azimuth = fmod(azimuth, 360.0); // Resto de la división por 360
@@ -203,17 +202,18 @@ void sensors_driver_calcular_angulos_magneto(sensors_driver_t *self, int16_vecto
 void sensors_driver_fusionar_sensores(sensors_driver_t *self) {
 
   // FILTRADO
+  float alpha = 0.9;
+
   if(self->mpu_conectado)
   {
     // FILTRADO
-    float alpha = 0.9;
     self->roll_angle = alpha * self->gyro_roll_angle + (1 - alpha) * self->accel_roll_angle;
     self->pitch_angle = alpha * self->gyro_pitch_angle + (1 - alpha) * self->accel_pitch_angle;
 
-    self->yaw_angle = self->gyro_yaw_angle; // le doy un valor, en caso que el magnetometro no este conectado
+    self->yaw_angle = (1 - alpha) * self->yaw_angle + alpha * self->gyro_yaw_angle; // le doy un valor, en caso que el magnetometro no este conectado
   }
 
-  if(self->magnetometer_conectado)
+  if(self->magnetometer_conectado && self->mpu_conectado)
   {
     // condicion por discontinuidad 360 = 0. ejemplo: gyro = 359 y magneto = 1 (magneto = 361)
     float alpha2 = 0.9;
@@ -225,6 +225,13 @@ void sensors_driver_fusionar_sensores(sensors_driver_t *self) {
     }
 
     self->yaw_angle = yaw_angle_filtrado;
+  }
+
+  if(self->magnetometer_conectado && !self->mpu_conectado)
+  {
+    self->roll_angle = 0;
+    self->pitch_angle = 0;
+    self->yaw_angle = alpha * self->yaw_angle + (1 - alpha) * self->magnet_azimuth_angle;
   }
   // FILTRADO
 

@@ -20,7 +20,6 @@
 #define ACCEL_OFFSET_Z (9.81-8.43)
 
 
-
 #ifdef __cplusplus
 extern "C"
 {
@@ -83,7 +82,7 @@ void sensors_driver_calcular_angulos_accel(sensors_driver_t *self, float_vector_
 
 void sensors_driver_calcular_angulos_gyro(sensors_driver_t *self, float_vector_t *gyro, float Ts);
 
-void sensors_driver_calcular_angulos_magneto(sensors_driver_t *self, int16_vector_t *magneto);
+void sensors_driver_calcular_angulos_magneto(sensors_driver_t *self, float_vector_t *magneto);
 
 void sensors_driver_fusionar_sensores(sensors_driver_t *self);
 
