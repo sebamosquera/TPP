@@ -59,6 +59,8 @@ void setup() {
   // Inicializar el driver y  los sensores
   sensors_driver_init(&sensors_driver);
 
+  // sensors_driver.mpu_conectado = false;
+
   sensors_driver_calibrate_sensors(&sensors_driver, calibrar_mpu, calibrar_magnetometro);
 
   if( !calibrar_mpu )
@@ -74,10 +76,10 @@ void setup() {
 
     // Serial.print("Offset gyro x: \t");
     // Serial.println(offsets[0]);
-    //
+    
     // Serial.print("Offset gyro y: \t");
     // Serial.println(offsets[1]);
-    //
+    
     // Serial.print("Offset gyro z: \t");
     // Serial.println(offsets[2]);
     // Serial.println();
@@ -86,7 +88,8 @@ void setup() {
 
   if( !calibrar_magnetometro )
   {
-    int16_t magneto_offsets[3] = {8, 244, -138};
+    // int16_t magneto_offsets[3] = {8, 244, -138};
+    int16_t magneto_offsets[3] = {-49, 288, -138};
     sensors_driver_set_magnetometer_offsets(&sensors_driver, magneto_offsets);
   }
 
@@ -97,10 +100,10 @@ void setup() {
 
     // Serial.print("Offset magnet x: \t");
     // Serial.println(magneto_offsets[0]);
-    //
+    
     // Serial.print("Offset magnet y: \t");
     // Serial.println(magneto_offsets[1]);
-    //
+    
     // Serial.print("Offset magnet z: \t");
     // Serial.println(magneto_offsets[2]);
     // Serial.println();
@@ -165,12 +168,12 @@ void loop() {
 
     if(posicion_drone_i < n_posiciones) {
 
-      double latitud_drone = posicion_drone[posicion_drone_i][0];
-      double longitud_drone = posicion_drone[posicion_drone_i][1];
-      double altitud_drone = posicion_drone[posicion_drone_i][2];
+      // double latitud_drone = posicion_drone[posicion_drone_i][0];
+      // double longitud_drone = posicion_drone[posicion_drone_i][1];
+      // double altitud_drone = posicion_drone[posicion_drone_i][2];
 
-      antena_tracker_set_posicion_del_drone(&antena_tracker, latitud_drone, longitud_drone, altitud_drone);
-      
+      // antena_tracker_set_posicion_del_drone(&antena_tracker, latitud_drone, longitud_drone, altitud_drone);
+
       posicion_drone_i++;
     }
 
