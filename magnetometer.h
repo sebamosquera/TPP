@@ -95,6 +95,12 @@ enum MAGNETOMETRO_MODE
 #define HMC5883L_STATUS_READY_BIT   0
 
 
+// Valores hardcodeados, mejorar
+#define MAGNETO_SCALE_X 180.0
+#define MAGNETO_SCALE_Y 200.0
+// Valores hardcodeados, mejorar
+
+
 typedef struct magnetometer
 {
     struct i2c_information i2c;
@@ -111,7 +117,7 @@ bool magnetometer_connected(magnetometer_t* self);
 
 bool magnetometer_read_raw(magnetometer_t* self, int16_t *x, int16_t *y, int16_t *z);
 
-bool magnetometer_read(magnetometer_t* self, int16_vector_t *mag);
+bool magnetometer_read(magnetometer_t* self, float_vector_t *mag);
 
 
 

@@ -55,7 +55,7 @@ bool magnetometer_read_raw(magnetometer_t* self, int16_t *x, int16_t *y, int16_t
   return true;
 }
 
-bool magnetometer_read(magnetometer_t* self, int16_vector_t *magnet) {
+bool magnetometer_read(magnetometer_t* self, float_vector_t *magnet) {
 
   int16_t x_raw;
   int16_t y_raw;
@@ -66,14 +66,14 @@ bool magnetometer_read(magnetometer_t* self, int16_vector_t *magnet) {
   }
 
   if(self->calibrated) {
-    magnet->x = x_raw - self->magnet_offsets.x;
-    magnet->y = y_raw - self->magnet_offsets.y;
-    magnet->z = z_raw - self->magnet_offsets.z;
+    magnet->x = (x_raw - self->magnet_offsets.x) / MAGNETO_SCALE_X;
+    magnet->y = (y_raw - self->magnet_offsets.y) / MAGNETO_SCALE_Y;
+    magnet->z = (z_raw - self->magnet_offsets.z) / 1.0; // Para asegurarme que sea un float (chequear, mejorar)
   }
   else {
-    magnet->x = x_raw;
-    magnet->y = y_raw;
-    magnet->z = z_raw;
+    magnet->x = x_raw * 1.0; // Para asegurarme que sea un float (chequear, mejorar) 
+    magnet->y = y_raw * 1.0; // Para asegurarme que sea un float (chequear, mejorar)
+    magnet->z = z_raw * 1.0; // Para asegurarme que sea un float (chequear, mejorar)
   }
 
   // En el modo único, se requiere activar explícitamente una nueva medición
